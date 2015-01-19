@@ -6,8 +6,7 @@
 
 using namespace std;
 
-const int size = 10000000;					//zakres obliczeñ
-const int cores = omp_get_max_threads();	//liczba dostêpnych rdzeni - 8
+const int size = 10000;						//zakres obliczeñ
 bool *table;								//true - liczba z³o¿ona, false - liczba pierwsza
 clock_t start;								//czas rozpoczêcia wyznaczania
 
@@ -45,9 +44,8 @@ void divMethodParallel() {
 
 	start = clock();
 
-#pragma omp parallel for schedule(dynamic, 1) 
-//#pragma omp parallel for schedule(dynamic, cores) 
-//#pragma omp parallel for schedule(static, cores) 
+#pragma omp parallel for schedule(dynamic, 1)
+//#pragma omp parallel for schedule(static, size/omp_get_max_threads()) 
 	for (long i = 3; i < size; ++i)
 	if (i % 2 == 0)
 		table[i] = true;
@@ -82,8 +80,7 @@ void tableMethodParallel() {
 	start = clock();   
 
 #pragma omp parallel for schedule(dynamic, 1)
-//#pragma omp parallel for schedule(dynamic, cores) 
-//#pragma omp parallel for schedule(static, cores)
+//#pragma omp parallel for schedule(static, size/omp_get_max_threads())
 	for (long i = 2; i < (int)(sqrt((double)size)+1); ++i) {
 		if (!table[i])       
 		for (int j = 2 * i; j < size; j += i)
@@ -102,7 +99,6 @@ int main() {
 
 	divMethodParallel();
 	tableMethodParallel();
-	
-	system("PAUSE");   
+
 	return 0;
 }
